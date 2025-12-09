@@ -1,0 +1,57 @@
+CREATE DATABASE IF NOT EXISTS tasks_db
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE tasks_db;
+
+CREATE TABLE Users (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Login VARCHAR(50) NOT NULL UNIQUE,
+    PasswordHash VARCHAR(255) NOT NULL,
+    IsAdmin TINYINT(1) NOT NULL DEFAULT 0
+);
+
+CREATE TABLE Contests (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    NameRu VARCHAR(255) NOT NULL,
+    Year SMALLINT NOT NULL
+);
+
+CREATE TABLE Tags (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE Tasks (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    TitleRu VARCHAR(255) NOT NULL,
+    ShortStatement TEXT NOT NULL,
+    ShortIdea TEXT,
+    PolygonUrl VARCHAR(500),
+    CodeforcesPrepared TINYINT(1) NOT NULL DEFAULT 0,
+    YandexPrepared TINYINT(1) NOT NULL DEFAULT 0,
+    Difficulty TINYINT NOT NULL,
+    Note TEXT
+);
+
+CREATE TABLE TaskContest (
+    TaskId INT NOT NULL,
+    ContestId INT NOT NULL,
+    PRIMARY KEY (TaskId, ContestId),
+    CONSTRAINT FK_TaskContest_Task FOREIGN KEY (TaskId)
+        REFERENCES Tasks(Id) ON DELETE CASCADE,
+    CONSTRAINT FK_TaskContest_Contest FOREIGN KEY (ContestId)
+        REFERENCES Contests(Id) ON DELETE CASCADE
+);
+
+CREATE TABLE TaskTag (
+    TaskId INT NOT NULL,
+    TagId INT NOT NULL,
+    PRIMARY KEY (TaskId, TagId),
+    CONSTRAINT FK_TaskTag_Task FOREIGN KEY (TaskId)
+        REFERENCES Tasks(Id) ON DELETE CASCADE,
+    CONSTRAINT FK_TaskTag_Tag FOREIGN KEY (TagId)
+        REFERENCES Tags(Id) ON DELETE CASCADE
+);
+INSERT INTO Users (Login, PasswordHash, IsAdmin)
+VALUES ('admin', 'admin', 1);
